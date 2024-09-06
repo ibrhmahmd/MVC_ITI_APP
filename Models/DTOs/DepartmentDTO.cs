@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MVC_PROJECT.Models
+namespace MVC_PROJECT.Models.DTOs
 {
-    public class Department
+    public class DepartmentDTO
     {
         [Key]
         public int DepartmentId { get; set; }
@@ -10,7 +10,5 @@ namespace MVC_PROJECT.Models
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
-
-        public virtual ICollection<Student> Students { get; set; }
     }
 }

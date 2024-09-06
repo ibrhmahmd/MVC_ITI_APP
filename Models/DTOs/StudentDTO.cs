@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MVC_PROJECT.Models
+namespace MVC_PROJECT.Models.DTOs
 {
     public class StudentDTO
     {
+        [Key]
+        public int StudentId { get; set; }
+
         [Required]
         [StringLength(100)]
         public string FirstName { get; set; }

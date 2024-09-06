@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
+using MVC_PROJECT.Models.DTOs;
 
 namespace MVC_PROJECT.Controllers
 {
@@ -49,20 +50,25 @@ namespace MVC_PROJECT.Controllers
         }
 
         // POST: Departments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DepartmentId,Name")] Department department)
+        public async Task<IActionResult> Create([Bind("Name")] DepartmentDTO departmentDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(department);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
+
             }
-            return View(department);
+            var department = new Department 
+            { 
+                Name = departmentDto.Name,
+            };
+            _context.Add(department);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = department.DepartmentId });
         }
+
 
         // GET: Departments/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -81,13 +87,11 @@ namespace MVC_PROJECT.Controllers
         }
 
         // POST: Departments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DepartmentId,Name")] Department department)
+        public async Task<IActionResult> Edit(int id, [Bind("DepartmentId,Name")] DepartmentDTO departmentDto)
         {
-            if (id != department.DepartmentId)
+            if (id != departmentDto.DepartmentId)
             {
                 return NotFound();
             }
@@ -96,12 +100,20 @@ namespace MVC_PROJECT.Controllers
             {
                 try
                 {
+                    var department = await _context.Departments.FindAsync(id);
+                    if (department == null)
+                    {
+                        return NotFound();
+                    }
+
+                    department.Name= departmentDto.Name;
+                   
                     _context.Update(department);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DepartmentExists(department.DepartmentId))
+                    if (!DepartmentExists(id))
                     {
                         return NotFound();
                     }
@@ -112,8 +124,11 @@ namespace MVC_PROJECT.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(department);
+
+            return RedirectToAction(nameof(Details), new { id = departmentDto.DepartmentId });
         }
+
+
 
         // GET: Departments/Delete/5
         public async Task<IActionResult> Delete(int? id)

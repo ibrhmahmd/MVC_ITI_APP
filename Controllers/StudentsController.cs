@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
+using MVC_PROJECT.Models.DTOs;
 
 namespace MVC_PROJECT.Controllers
 {
@@ -75,20 +76,6 @@ namespace MVC_PROJECT.Controllers
         }
 
 
-        //// POST: Students/Create
-        //[HttpPost]
-        //public async Task<IActionResult> CreateStudent([Bind("FirstName,LastName,DateOfBirth,Email,Password,CPassword,DepartmentId")] Student student)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(student);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", student.DepartmentId);
-        //    return View(student);
-        //}
-
 
         // GET: Students/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -97,7 +84,6 @@ namespace MVC_PROJECT.Controllers
             {
                 return NotFound();
             }
-
             var student = await _context.Students.FindAsync(id);
             if (student == null)
             {
@@ -107,44 +93,59 @@ namespace MVC_PROJECT.Controllers
             return View(student);
         }
 
+
+
         // POST: Students/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost("{id}")]
-        public IActionResult Edit( int id, [Bind("FirstName,LastName,DateOfBirth,Email,DepartmentId,Password,CPassword")] StudentDTO dto)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("StudentId,FirstName,LastName,DateOfBirth,Email,DepartmentId,Password,CPassword")] StudentDTO studentDTO)
         {
-            if (!ModelState.IsValid)
+            if (id != studentDTO.StudentId)
             {
-                return BadRequest(ModelState);
+                return NotFound();
             }
 
-            var student = new Student { 
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                DateOfBirth = dto.DateOfBirth,
-                Email = dto.Email,
-                DepartmentId = dto.DepartmentId,
-                Password = dto.Password,
-            };
-            try
+            if (ModelState.IsValid)
             {
-                _context.Update(student);
-                _context.SaveChanges();
+                try
+                {
+                    var student = await _context.Students.FindAsync(id);
+                    if (student == null)
+                    {
+                        return NotFound();
+                    }
 
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Students.Any(e => e.StudentId == id))
-                {
-                    return NotFound();
+                    // Update student properties from DTO
+                    student.FirstName = studentDTO.FirstName;
+                    student.LastName = studentDTO.LastName;
+                    student.DateOfBirth = studentDTO.DateOfBirth;
+                    student.Email = studentDTO.Email;
+                    student.DepartmentId = studentDTO.DepartmentId;
+
+                    // Only update password if a new one is provided
+                    if (!string.IsNullOrEmpty(studentDTO.Password))
+                    {
+                        student.Password = studentDTO.Password;
+                    }
+                    _context.Update(student);
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    throw;
+                    if (!StudentExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
+                return RedirectToAction(nameof(Index));
             }
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", student.DepartmentId);
-            return View(student);
+
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", studentDTO.DepartmentId);
+            return View(studentDTO);
         }
 
 
