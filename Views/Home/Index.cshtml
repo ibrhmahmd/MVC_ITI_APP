@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Use the links below to navigate to the different pages:</p>
+    <h2>Students</h2>
+    <ul>
+        <li><a asp-controller="Students" asp-action="Index">Students List</a></li>
+        <li><a asp-controller="Students" asp-action="Create">Create Student</a></li>
+        <li><a asp-controller="Students" asp-action="Details" asp-route-id="1">Student Details</a></li>
+        <li><a asp-controller="Students" asp-action="Edit" asp-route-id="1">Edit Student</a></li>
+        <li><a asp-controller="Students" asp-action="Delete" asp-route-id="1">Delete Student</a></li>
+    </ul>
+
+    <h2>Departments</h2>
+    <ul>
+        <li><a asp-controller="Departments" asp-action="Index">Departments List</a></li>
+        <li><a asp-controller="Departments" asp-action="Create">Create Department</a></li>
+        <li><a asp-controller="Departments" asp-action="Details" asp-route-id="1">Department Details</a></li>
+        <li><a asp-controller="Departments" asp-action="Edit" asp-route-id="1">Edit Department</a></li>
+        <li><a asp-controller="Departments" asp-action="Delete" asp-route-id="1">Delete Department</a></li>
+    </ul>
+</div>
+
+
