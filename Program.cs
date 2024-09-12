@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
+using MVC_PROJECT.Repositories;
+using MVC_PROJECT.UnitOfWork;
 
 namespace MVC_PROJECT
 {
@@ -16,17 +18,21 @@ namespace MVC_PROJECT
             builder.Services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Register UnitOfWork and Repositories
+            builder.Services.AddScoped<IUnitOfWork, MVC_PROJECT.UnitOfWork.UnitOfWork>();
+            builder.Services.AddScoped<IRepository<Student>, StudentRepository>();
+            builder.Services.AddScoped<IRepository<Department>, DepartmentRepository>();
+            builder.Services.AddScoped<IRepository<Course>, CourseRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            //app.UseHttpLogging();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -35,7 +41,8 @@ namespace MVC_PROJECT
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
