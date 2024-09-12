@@ -51,7 +51,6 @@ namespace MVC_PROJECT.Controllers
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name");
             return View();
         }
-
         [HttpPost]
         public IActionResult Create([Bind("FirstName,LastName,DateOfBirth,Email,Password,CPassword,DepartmentId")] StudentDTO dto)
         {
@@ -59,22 +58,23 @@ namespace MVC_PROJECT.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            var student = new Student
+            if (!EmailExists(dto.Email))
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                DateOfBirth = dto.DateOfBirth,
-                Email = dto.Email,
-                Password = dto.Password,
-                DepartmentId = dto.DepartmentId,
-            };
-            _context.Add(student);
-            _context.SaveChanges();
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", dto.DepartmentId);
-            return RedirectToAction(nameof(Index));
+                var student = new Student
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    DateOfBirth = dto.DateOfBirth,
+                    Email = dto.Email,
+                    Password = dto.Password,
+                    DepartmentId = dto.DepartmentId,
+                };
+                _context.Add(student);
+                _context.SaveChanges();
+                return Json(new { success = true, redirectUrl = Url.Action("Index") });
+            }
+            return Json(new { success = false, message = "This email is used before" });
         }
-
 
 
         // GET: Students/Edit/5
@@ -92,7 +92,6 @@ namespace MVC_PROJECT.Controllers
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", student.DepartmentId);
             return View(student);
         }
-
 
 
         // POST: Students/Edit/5
@@ -114,21 +113,23 @@ namespace MVC_PROJECT.Controllers
                     {
                         return NotFound();
                     }
-
-                    // Update student properties from DTO
-                    student.FirstName = studentDTO.FirstName;
-                    student.LastName = studentDTO.LastName;
-                    student.DateOfBirth = studentDTO.DateOfBirth;
-                    student.Email = studentDTO.Email;
-                    student.DepartmentId = studentDTO.DepartmentId;
-
-                    // Only update password if a new one is provided
-                    if (!string.IsNullOrEmpty(studentDTO.Password))
+                    if (!EmailExists(studentDTO.Email))
                     {
-                        student.Password = studentDTO.Password;
+                        //student properties from DTO
+                        student.FirstName = studentDTO.FirstName;
+                        student.LastName = studentDTO.LastName;
+                        student.DateOfBirth = studentDTO.DateOfBirth;
+                        student.Email = studentDTO.Email;
+                        student.DepartmentId = studentDTO.DepartmentId;
+
+                        // password if a new one is provided
+                        if (!string.IsNullOrEmpty(studentDTO.Password))
+                        {
+                            student.Password = studentDTO.Password;
+                        }
+                        _context.Update(student);
+                        await _context.SaveChangesAsync();
                     }
-                    _context.Update(student);
-                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -143,12 +144,8 @@ namespace MVC_PROJECT.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "DepartmentId", "Name", studentDTO.DepartmentId);
-            return View(studentDTO);
+            return Json(new { success = false, message = "This email is used before" });
         }
-
-
 
         // GET: Students/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -187,6 +184,11 @@ namespace MVC_PROJECT.Controllers
         private bool StudentExists(int id)
         {
             return _context.Students.Any(e => e.StudentId == id);
+        }
+
+        private bool EmailExists(string email) 
+        {
+            return _context.Students.Any(e => e.Email== email);
         }
     }
 }

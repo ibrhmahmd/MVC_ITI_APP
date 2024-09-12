@@ -7,7 +7,7 @@ namespace MVC_PROJECT.Models.DTOs
         [Key]
         public int DepartmentId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Name is required")]
         [StringLength(100)]
         public string Name { get; set; }
     }

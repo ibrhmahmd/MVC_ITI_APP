@@ -1,84 +1,90 @@
 ﻿@model MVC_PROJECT.Models.Student
-
 @{
     ViewData["Title"] = "Create";
 }
-
 <h1>Create</h1>
-
 <h4>Student</h4>
 <hr />
-<div class="row"> 
+<div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" id="createForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
                 <label asp-for="DateOfBirth" class="control-label"></label>
                 <input asp-for="DateOfBirth" class="form-control" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-
-
             <div class="form-group">
                 <label asp-for="CPassword" class="control-label"></label>
                 <input asp-for="CPassword" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-
             <div class="form-group">
                 <label asp-for="DepartmentId" class="control-label"></label>
-                <select asp-for="DepartmentId" class ="form-control" asp-items="ViewBag.DepartmentId">
-                      @* @foreach(Department item in ViewBag.depts)
-                      {
-                          <option value="@item.DepartmentId">@item.Name</option>
-                      } *@
+                <select asp-for="DepartmentId" class="form-control" asp-items="ViewBag.DepartmentId">
+                    @* @foreach(Department item in ViewBag.depts)
+                    {
+                    <option value="@item.DepartmentId">@item.Name</option>
+                    } *@
                 </select>
             </div>
-
-
-
-
             <div class="form-group">
-                <input type="submit" value="submit" class="btn btn-primary" />
+                <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#createForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Create", "Student")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            window.location.href = result.redirectUrl;
+                        } else {
+                            alert(result.message);
+                        }
+                    },
+                    error: function () {
+                        alert("This arguments is used try another");
+                    }
+                });
+            });
+        });
+    </script>
 }
+
+@* @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@

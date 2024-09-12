@@ -8,20 +8,21 @@ namespace MVC_PROJECT.Models.DTOs
         [Key]
         public int StudentId { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Name is required")]
+        [StringLength(20)]
         public string FirstName { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(20)]
         public string LastName { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
-        [Required]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
         [StringLength(100)]
         [RegularExpression(@"[a-zA-Z0-9_]+@[a-zA-Z]+.[a-zA-Z]{2,4}")]
+        //[UniqueEmail] 
         public string Email { get; set; }
 
         [Required]

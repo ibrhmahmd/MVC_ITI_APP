@@ -11,6 +11,9 @@ namespace MVC_PROJECT.Models
         [StringLength(100)]
         public string Name { get; set; }
 
+        [Required]
+        public virtual ICollection<Course> Courses{ get; set; }
+
         public virtual ICollection<Student> Students { get; set; }
     }
 }

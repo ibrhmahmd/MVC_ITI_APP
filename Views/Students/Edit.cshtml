@@ -66,5 +66,29 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#createForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Create", "Student")',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            window.location.href = result.redirectUrl;
+                        } else {
+                            alert(result.message);
+                        }
+                    },
+                    error: function () {
+                        alert("This arguments is used try another");
+                    }
+                });
+            });
+        });
+    </script>
 }

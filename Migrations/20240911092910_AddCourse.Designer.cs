@@ -4,6 +4,7 @@ using MVC_PROJECT.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MVC_PROJECT.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911092910_AddCourse")]
+    partial class AddCourse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,36 +24,6 @@ namespace MVC_PROJECT.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("MVC_PROJECT.Models.Course", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
-
-                    b.Property<int>("DepartmentID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Hours")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StudentID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DepartmentID");
-
-                    b.HasIndex("StudentID");
-
-                    b.ToTable("Course");
-                });
 
             modelBuilder.Entity("MVC_PROJECT.Models.Department", b =>
                 {
@@ -110,23 +83,6 @@ namespace MVC_PROJECT.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("MVC_PROJECT.Models.Course", b =>
-                {
-                    b.HasOne("MVC_PROJECT.Models.Department", "Department")
-                        .WithMany("Courses")
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MVC_PROJECT.Models.Student", "Dtudent")
-                        .WithMany("Courses")
-                        .HasForeignKey("StudentID");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Dtudent");
-                });
-
             modelBuilder.Entity("MVC_PROJECT.Models.Student", b =>
                 {
                     b.HasOne("MVC_PROJECT.Models.Department", "Department")
@@ -140,14 +96,7 @@ namespace MVC_PROJECT.Migrations
 
             modelBuilder.Entity("MVC_PROJECT.Models.Department", b =>
                 {
-                    b.Navigation("Courses");
-
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("MVC_PROJECT.Models.Student", b =>
-                {
-                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

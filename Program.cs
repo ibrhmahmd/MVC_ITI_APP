@@ -26,6 +26,7 @@ namespace MVC_PROJECT
                 app.UseHsts();
             }
 
+            //app.UseHttpLogging();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -34,8 +35,7 @@ namespace MVC_PROJECT
             app.UseAuthorization();
 
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

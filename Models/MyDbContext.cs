@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MVC_PROJECT.Models.DTOs;
 
 namespace MVC_PROJECT.Models
 {
@@ -22,5 +23,6 @@ namespace MVC_PROJECT.Models
                 .WithMany(d => d.Students)
                 .HasForeignKey(s => s.DepartmentId);
         }
+        public DbSet<MVC_PROJECT.Models.DTOs.CourseDTO> CourseDTO { get; set; } = default!;
     }
 }
