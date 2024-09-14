@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
+using MVC_PROJECT.Models.DTOs;
 
 namespace MVC_PROJECT.Repositories
 {
@@ -16,12 +17,16 @@ namespace MVC_PROJECT.Repositories
 
         public IEnumerable<Student> GetAll()
         {
-            return _dbSet.ToList();
+            return _context.Students
+                            .Include(s => s.Department) // Include related entities if needed
+                            .Where(s => !s.IsDeleted).ToList();
         }
 
         public Student GetById(int id)
         {
-            return _dbSet.Find(id);
+            return _context.Students
+                           .Include(s => s.Department) // Include related entities if needed
+                           .SingleOrDefault(s => s.StudentId == id && !s.IsDeleted);
         }
 
         public void Insert(Student entity)
@@ -35,15 +40,24 @@ namespace MVC_PROJECT.Repositories
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public void Delete(int id)
+        public void SoftDelete(int id)
         {
             var entity = _dbSet.Find(id);
             if (entity != null)
             {
-                _dbSet.Remove(entity);
+                entity.IsDeleted = true;
+                _context.SaveChanges();
             }
         }
-
+        public void HardDelete(int id)
+        {
+            var entity = _dbSet.Find(id);
+            if (entity != null)
+            {
+                _context.Students.Remove(entity);
+                _context.SaveChanges();
+            }
+        }
         public void Save()
         {
             _context.SaveChanges();

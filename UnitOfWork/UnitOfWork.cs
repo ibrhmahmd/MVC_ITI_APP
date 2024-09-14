@@ -1,4 +1,5 @@
 ﻿using MVC_PROJECT.Models;
+using MVC_PROJECT.Models.DTOs;
 using MVC_PROJECT.Repositories;
 
 namespace MVC_PROJECT.UnitOfWork
@@ -6,9 +7,9 @@ namespace MVC_PROJECT.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly MyDbContext _context;
-        private IRepository<Student> _students;
-        private IRepository<Department> _departments;
-        private IRepository<Course> _courses;
+        public IRepository<Student> _students;
+        public IRepository<Department> _departments;
+        public IRepository<Course> _courses;
 
         public UnitOfWork(MyDbContext context)
         {
@@ -19,6 +20,7 @@ namespace MVC_PROJECT.UnitOfWork
         public IRepository<Student> Students => _students ??= new StudentRepository(_context);
         public IRepository<Department> Departments => _departments ??= new DepartmentRepository(_context);
         public IRepository<Course> Courses => _courses ??= new CourseRepository(_context);
+
 
         // Commit all changes to the database
         public void Save()

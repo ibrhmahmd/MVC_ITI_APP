@@ -10,8 +10,8 @@ namespace MVC_PROJECT.Models
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
+        public bool IsDeleted { get; set; } // Soft delete flag
 
-        [Required]
         public virtual ICollection<Course> Courses{ get; set; }
 
         public virtual ICollection<Student> Students { get; set; }

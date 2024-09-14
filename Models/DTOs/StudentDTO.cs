@@ -34,5 +34,10 @@ namespace MVC_PROJECT.Models.DTOs
 
         [ForeignKey("Department")]
         public int DepartmentId { get; set; }
+
+        public static explicit operator StudentDTO(Student? v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

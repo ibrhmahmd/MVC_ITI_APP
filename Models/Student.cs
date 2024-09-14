@@ -31,6 +31,8 @@ namespace MVC_PROJECT.Models
         [Compare("Password")]
         public string CPassword { get; set; }
 
+        public bool IsDeleted { get; set; } // Soft delete flag
+
         [ForeignKey("Department")]
         public int DepartmentId { get; set; }
         public virtual Department Department { get; set; }

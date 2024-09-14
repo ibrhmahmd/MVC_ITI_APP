@@ -12,7 +12,7 @@ namespace MVC_PROJECT.Models
 
         public DbSet<Student> Students { get; set; }
         public DbSet<Department> Departments { get; set; }
-
+        public DbSet<Course> Courses { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,6 +23,5 @@ namespace MVC_PROJECT.Models
                 .WithMany(d => d.Students)
                 .HasForeignKey(s => s.DepartmentId);
         }
-        public DbSet<MVC_PROJECT.Models.DTOs.CourseDTO> CourseDTO { get; set; } = default!;
     }
 }

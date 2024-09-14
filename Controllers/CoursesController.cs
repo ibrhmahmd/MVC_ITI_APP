@@ -22,196 +22,120 @@ namespace MVC_PROJECT.Controllers
 
         public IActionResult Index()
         {
-            var course = _unitOfWork.Courses.GetAll()
-                              .Select(s => new CourseDTO
-                              {
-                                  Name = s.Name,
-                                  Hours = s.Hours,
-                                  DepartmentID = s.DepartmentID,
-                              }).ToList();
-            return View(course);
+            var Courses = _unitOfWork.Courses.GetAll();
+            return View(Courses);
         }
 
+        // GET: Course/Details/5
+        public IActionResult Details(int id)
+        {
+            var department = _unitOfWork.Departments.GetById(id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return View(department);
+        }
+
+        // GET: Departments/Create
+        public IActionResult Create()
+        {
+            var departments = _unitOfWork.Departments.GetAll();
+            ViewBag.DepartmentList = departments;
+            System.Diagnostics.Debug.WriteLine("Departments count: " + departments.Count());
+            return View();
+        }
+
+        // POST: Course/Create
         [HttpPost]
-        public IActionResult Create(CourseDTO CourseDTO)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create([Bind("Name, Hours, DepartmentID")] Course Courses)
         {
             if (ModelState.IsValid)
             {
-                var Course = new Course
-                {
-                    Name = CourseDTO.Name,
-                    Hours=CourseDTO.Hours,
-                    DepartmentID=CourseDTO.DepartmentID,
-                };
-
-                _unitOfWork.Courses.Insert(Course);
-                _unitOfWork.Save();
-                return RedirectToAction(nameof(Index));
             }
-            return View(CourseDTO);
+            _unitOfWork.Courses.Insert(Courses);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
+            return View(Courses);
+        }
+
+        // GET: Course/Edit/5
+        public IActionResult Edit(int id)
+        {
+            var course = _unitOfWork.Courses.GetById(id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+            var departments = _unitOfWork.Departments.GetAll();
+            ViewBag.DepartmentList = departments;
+            System.Diagnostics.Debug.WriteLine("Departments count: " + departments.Count());
+            return View();
+            return View(course);
+        }
+
+
+        // POST: Course/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, [Bind("ID, Name, Hours, DepartmentID")] Course course)
+        {
+            if (id != course.ID)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+              
+            }
+            try
+            {
+                _unitOfWork.Courses.Update(course);
+                _unitOfWork.Save();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_unitOfWork.Courses.GetAll().Any(e => e.ID == course.ID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+            return View(course);
+        }
+
+        // GET: Course/Delete/5
+        public IActionResult Delete(int id)
+        {
+            var course = _unitOfWork.Courses.GetById(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            return View(course);
+        }
+
+        // POST: Course/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _unitOfWork.Courses.SoftDelete(id);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
+        }
+        // Hard delete
+        [HttpPost]
+        public IActionResult HardDelete(int id)
+        {
+            _unitOfWork.Courses.HardDelete(id);
+            return RedirectToAction(nameof(Index));
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        //    private readonly MyDbContext _context;
-
-        //    public CoursesController(MyDbContext context)
-        //    {
-        //        _context = context;
-        //    }
-
-        //    // GET: CoursesDTO
-        //    public async Task<IActionResult> Index()
-        //    {
-        //        return View(await _context.CourseDTO.ToListAsync());
-        //    }
-
-        //    // GET: CoursesDTO/Details/5
-        //    public async Task<IActionResult> Details(int? id)
-        //    {
-        //        if (id == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        var courseDTO = await _context.CourseDTO
-        //            .FirstOrDefaultAsync(m => m.ID == id);
-        //        if (courseDTO == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        return View(courseDTO);
-        //    }
-
-        //    // GET: CoursesDTO/Create
-        //    public IActionResult Create()
-        //    {
-        //        return View();
-        //    }
-
-        //    // POST: CoursesDTO/Create
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //    [HttpPost]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Create([Bind("ID,Name,Hours,StudentID,DepartmentID")] CourseDTO courseDTO)
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            _context.Add(courseDTO);
-        //            await _context.SaveChangesAsync();
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        return View(courseDTO);
-        //    }
-
-        //    // GET: CoursesDTO/Edit/5
-        //    public async Task<IActionResult> Edit(int? id)
-        //    {
-        //        if (id == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        var courseDTO = await _context.CourseDTO.FindAsync(id);
-        //        if (courseDTO == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        return View(courseDTO);
-        //    }
-
-        //    // POST: CoursesDTO/Edit/5
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //    [HttpPost]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Edit(int id, [Bind("ID,Name,Hours,StudentID,DepartmentID")] CourseDTO courseDTO)
-        //    {
-        //        if (id != courseDTO.ID)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        if (ModelState.IsValid)
-        //        {
-        //            try
-        //            {
-        //                _context.Update(courseDTO);
-        //                await _context.SaveChangesAsync();
-        //            }
-        //            catch (DbUpdateConcurrencyException)
-        //            {
-        //                if (!CourseDTOExists(courseDTO.ID))
-        //                {
-        //                    return NotFound();
-        //                }
-        //                else
-        //                {
-        //                    throw;
-        //                }
-        //            }
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        return View(courseDTO);
-        //    }
-
-        //    // GET: CoursesDTO/Delete/5
-        //    public async Task<IActionResult> Delete(int? id)
-        //    {
-        //        if (id == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        var courseDTO = await _context.CourseDTO
-        //            .FirstOrDefaultAsync(m => m.ID == id);
-        //        if (courseDTO == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        return View(courseDTO);
-        //    }
-
-        //    // POST: CoursesDTO/Delete/5
-        //    [HttpPost, ActionName("Delete")]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> DeleteConfirmed(int id)
-        //    {
-        //        var courseDTO = await _context.CourseDTO.FindAsync(id);
-        //        if (courseDTO != null)
-        //        {
-        //            _context.CourseDTO.Remove(courseDTO);
-        //        }
-
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    private bool CourseDTOExists(int id)
-        //    {
-        //        return _context.CourseDTO.Any(e => e.ID == id);
-        //    }
-        //}
-    }
+}

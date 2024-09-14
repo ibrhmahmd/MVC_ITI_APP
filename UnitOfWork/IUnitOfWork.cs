@@ -3,7 +3,7 @@ using MVC_PROJECT.Repositories;
 
 namespace MVC_PROJECT.UnitOfWork
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
         IRepository<Student> Students { get; }
         IRepository<Department> Departments { get; }

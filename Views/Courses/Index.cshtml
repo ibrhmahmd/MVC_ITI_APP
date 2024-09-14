@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MVC_PROJECT.Models.DTOs.CourseDTO>
+﻿@model IEnumerable<MVC_PROJECT.Models.Course>
 
 @{
     ViewData["Title"] = "Index";
@@ -19,10 +19,7 @@
                 @Html.DisplayNameFor(model => model.Hours)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.StudentID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DepartmentID)
+                @Html.DisplayNameFor(model => model.Department)
             </th>
             <th></th>
         </tr>
@@ -37,10 +34,7 @@
                 @Html.DisplayFor(modelItem => item.Hours)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.StudentID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DepartmentID)
+                @Html.DisplayFor(modelItem => item.Department.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

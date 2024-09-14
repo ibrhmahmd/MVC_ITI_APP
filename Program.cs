@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
+using MVC_PROJECT.Models.DTOs;
 using MVC_PROJECT.Repositories;
 using MVC_PROJECT.UnitOfWork;
 
@@ -35,9 +36,7 @@ namespace MVC_PROJECT
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.MapControllerRoute(

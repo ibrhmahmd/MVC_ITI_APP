@@ -1,22 +1,48 @@
 ﻿@model MVC_PROJECT.Models.Department
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Department";
 }
 
-<h1>Edit</h1>
+<h1>Edit Department</h1>
 
 <h4>Department</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DepartmentId" />
+
+
+            <input type="hidden" asp-for="DepartmentId" />
+
+            <!-- Department Name -->
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- List of Courses Assigned to Department (for deletion) -->
+            <div class="form-group">
+                <label class="control-label">Courses in Department</label>
+                <ul class="list-group">
+                    @if (Model.Courses != null && Model.Courses.Any())
+                    {
+                        @foreach (var course in Model.Courses)
+                        {
+                            <li class="list-group-item">
+                                @course.Name
+                                <input type="checkbox" name="CoursesToDelete" value="@course.ID" /> Remove
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item">No courses currently in this department.</li>
+                    }
+                </ul>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -30,5 +56,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

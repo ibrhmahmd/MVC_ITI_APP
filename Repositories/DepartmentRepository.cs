@@ -17,12 +17,19 @@ namespace MVC_PROJECT.Repositories
 
         public IEnumerable<Department> GetAll()
         {
-            return _dbSet.ToList();
+           var departments = _context.Departments
+                .Include(s => s.Courses) // Include related entities if needed
+                .Where(s => !s.IsDeleted).ToList();
+
+            return departments;
+
         }
 
         public Department GetById(int id)
         {
-            return _dbSet.Find(id);
+            return _context.Departments
+                            .Include(s => s.Courses) // Include related entities if needed
+                            .SingleOrDefault(s => s.DepartmentId == id && !s.IsDeleted);
         }
 
         public void Insert(Department entity)
@@ -30,18 +37,29 @@ namespace MVC_PROJECT.Repositories
             _dbSet.Add(entity);
         }
 
+
         public void Update(Department entity)
         {
             _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public void Delete(int id)
+        public void SoftDelete(int id)
         {
             var entity = _dbSet.Find(id);
             if (entity != null)
             {
-                _dbSet.Remove(entity);
+                entity.IsDeleted = true;
+                _context.SaveChanges();
+            }
+        }
+        public void HardDelete(int id)
+        {
+            var entity = _dbSet.Find(id);
+            if (entity != null)
+            {
+                _context.Departments.Remove(entity);
+                _context.SaveChanges();
             }
         }
 

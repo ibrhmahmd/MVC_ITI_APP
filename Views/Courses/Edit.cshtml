@@ -1,4 +1,4 @@
-﻿@model MVC_PROJECT.Models.DTOs.CourseDTO
+﻿@model MVC_PROJECT.Models.Course
 
 @{
     ViewData["Title"] = "Edit";
@@ -11,6 +11,9 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
+
+            <input type="hidden" asp-for="ID" />
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ID" />
             <div class="form-group">
@@ -24,14 +27,13 @@
                 <span asp-validation-for="Hours" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="StudentID" class="control-label"></label>
-                <input asp-for="StudentID" class="form-control" />
-                <span asp-validation-for="StudentID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="DepartmentID" class="control-label"></label>
-                <input asp-for="DepartmentID" class="form-control" />
-                <span asp-validation-for="DepartmentID" class="text-danger"></span>
+                <select asp-for="DepartmentID" class="form-control">
+                    @foreach (var item in ViewBag.DepartmentList)
+                    {
+                        <option value="@item.DepartmentId">@item.Name</option>
+                    }
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

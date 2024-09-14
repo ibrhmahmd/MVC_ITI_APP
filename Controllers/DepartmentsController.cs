@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.Models;
-using MVC_PROJECT.Models.DTOs;
 using MVC_PROJECT.UnitOfWork;
+using MVC_PROJECT.Models.DTOs;
 
 namespace MVC_PROJECT.Controllers
 {
@@ -22,191 +21,117 @@ namespace MVC_PROJECT.Controllers
 
         public IActionResult Index()
         {
-            var Departments = _unitOfWork.Departments.GetAll()
-                              .Select(s => new DepartmentDTO
-                              {
-                                  Name = s.Name,
-                              }).ToList();
-            return View(Departments);
+            var departments = _unitOfWork.Departments.GetAll();
+            return View(departments);
         }
 
+        // GET: Departments/Details/5
+        public IActionResult Details(int id)
+        {
+            var department = _unitOfWork.Departments.GetById(id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return View(department);
+        }
+
+        // GET: Departments/Create
+        public IActionResult Create()
+        {
+            var allCourses = _unitOfWork.Courses.GetAll();
+            ViewBag.AvailableCourses = new SelectList(allCourses, "CourseId", "CourseName");
+            return View();
+        }
+
+        // POST: Departments/Create
         [HttpPost]
-        public IActionResult Create(DepartmentDTO DepartmentDTO)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create([Bind("Name")] Department department)
         {
             if (ModelState.IsValid)
             {
-                var Department = new Department
-                {
-                    Name= DepartmentDTO.Name,
-                };
-
-                _unitOfWork.Departments.Insert(Department);
-                _unitOfWork.Save();
-                return RedirectToAction(nameof(Index));
+              
             }
-            return View(DepartmentDTO);
+            _unitOfWork.Departments.Insert(department);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
+            return View(department);
         }
 
+        // GET: Departments/Edit/5
+        public IActionResult Edit(int id)
+        {
+            var department = _unitOfWork.Departments.GetById(id);
 
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return View(department);
+        }
 
+        // POST: Departments/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, [Bind("DepartmentId, Name, Courses")] Department department)
+        {
+            if (id != department.DepartmentId)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                
+            }
+            try
+            {
+                _unitOfWork.Departments.Update(department);
+                _unitOfWork.Save();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_unitOfWork.Departments.GetAll().Any(e => e.DepartmentId == department.DepartmentId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
 
+            return View(department);
+        }
 
+        // GET: Departments/Delete/5
+        public IActionResult Delete(int id)
+        {
+            var department = _unitOfWork.Departments.GetById(id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return View(department);
+        }
+
+        // POST: Departments/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _unitOfWork.Departments.SoftDelete(id);
+            _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Hard delete
+        [HttpPost]
+        public IActionResult HardDelete(int id)
+        {
+            _unitOfWork.Departments.HardDelete(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
-    //{
-    //    private readonly MyDbContext _context;
-
-    //    public DepartmentsController(MyDbContext context)
-    //    {
-    //        _context = context;
-    //    }
-
-    //    // GET: Departments
-    //    public async Task<IActionResult> Index()
-    //    {
-    //        return View(await _context.Departments.ToListAsync());
-    //    }
-
-    //    // GET: Departments/Details/5
-    //    public async Task<IActionResult> Details(int? id)
-    //    {
-    //        if (id == null)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        var department = await _context.Departments
-    //            .FirstOrDefaultAsync(m => m.DepartmentId == id);
-    //        if (department == null)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        return View(department);
-    //    }
-
-    //    // GET: Departments/Create
-    //    public IActionResult Create()
-    //    {
-    //        return View();
-    //    }
-
-    //    // POST: Departments/Create
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> Create([Bind("Name")] DepartmentDTO departmentDto)
-    //    {
-    //        if (!ModelState.IsValid)
-    //        {
-    //            return BadRequest(ModelState);
-
-    //        }
-    //        var department = new Department 
-    //        { 
-    //            Name = departmentDto.Name,
-    //        };
-    //        _context.Add(department);
-    //        await _context.SaveChangesAsync();
-
-    //        return RedirectToAction(nameof(Details), new { id = department.DepartmentId });
-    //    }
-
-
-    //    // GET: Departments/Edit/5
-    //    public async Task<IActionResult> Edit(int? id)
-    //    {
-    //        if (id == null)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        var department = await _context.Departments.FindAsync(id);
-    //        if (department == null)
-    //        {
-    //            return NotFound();
-    //        }
-    //        return View(department);
-    //    }
-
-    //    // POST: Departments/Edit/5
-    //    [HttpPost]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> Edit(int id, [Bind("DepartmentId,Name")] DepartmentDTO departmentDto)
-    //    {
-    //        if (id != departmentDto.DepartmentId)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        if (ModelState.IsValid)
-    //        {
-    //            try
-    //            {
-    //                var department = await _context.Departments.FindAsync(id);
-    //                if (department == null)
-    //                {
-    //                    return NotFound();
-    //                }
-
-    //                department.Name= departmentDto.Name;
-
-    //                _context.Update(department);
-    //                await _context.SaveChangesAsync();
-    //            }
-    //            catch (DbUpdateConcurrencyException)
-    //            {
-    //                if (!DepartmentExists(id))
-    //                {
-    //                    return NotFound();
-    //                }
-    //                else
-    //                {
-    //                    throw;
-    //                }
-    //            }
-    //            return RedirectToAction(nameof(Index));
-    //        }
-
-    //        return RedirectToAction(nameof(Details), new { id = departmentDto.DepartmentId });
-    //    }
-
-
-
-    //    // GET: Departments/Delete/5
-    //    public async Task<IActionResult> Delete(int? id)
-    //    {
-    //        if (id == null)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        var department = await _context.Departments
-    //            .FirstOrDefaultAsync(m => m.DepartmentId == id);
-    //        if (department == null)
-    //        {
-    //            return NotFound();
-    //        }
-
-    //        return View(department);
-    //    }
-
-    //    // POST: Departments/Delete/5
-    //    [HttpPost, ActionName("Delete")]
-    //    [ValidateAntiForgeryToken]
-    //    public async Task<IActionResult> DeleteConfirmed(int id)
-    //    {
-    //        var department = await _context.Departments.FindAsync(id);
-    //        if (department != null)
-    //        {
-    //            _context.Departments.Remove(department);
-    //        }
-
-    //        await _context.SaveChangesAsync();
-    //        return RedirectToAction(nameof(Index));
-    //    }
-
-    //    private bool DepartmentExists(int id)
-    //    {
-    //        return _context.Departments.Any(e => e.DepartmentId == id);
-    //    }
-    //}
 }
